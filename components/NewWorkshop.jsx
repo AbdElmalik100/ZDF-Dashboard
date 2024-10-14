@@ -11,61 +11,44 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Plus, Trash2, RefreshCw, ImageUp, Trash } from 'lucide-react'
+import { Plus, RefreshCw, ImageUp, Trash } from 'lucide-react'
 import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { createEvent } from "@/store/slices/eventsSlice"
+import { createWorkshop } from "@/store/slices/workshopsSlice"
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation"
 import { formatByte } from "@/lib/formatter"
 
-function NewEvent({ btnText }) {
+function NewWorkshop({ btnText }) {
     const dispatch = useDispatch()
-    const { loading } = useSelector(state => state.events)
+    const { loading } = useSelector(state => state.workshops)
     const [openDialog, setOpenDialog] = useState(false)
     const router = useRouter()
     const [selectImage, setSelectImage] = useState({
         link: "",
         file: ""
     })
-    const [event, setEvent] = useState({
+    const [workshop, setWorkshop] = useState({
+        image: "",
         title: "",
         description: "",
-        sessions: [""],
-        venue: "",
+        lecturer: "",
+        location: "",
         date: new Date().toLocaleDateString("en-CA"),
-        time_from: "10:00",
-        time_to: "16:00",
-        ticket_price: "",
-        image: ""
+        time_from: "13:00",
+        time_to: "14:00",
+        discount: "",
+        price: "",
     })
     const [progress, setProgress] = useState(0)
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setEvent({ ...event, [name]: value })
+        setWorkshop({ ...workshop, [name]: value })
     }
-    const handleSessions = (e) => {
-        const { name, value } = e.target
-        const newSessions = [...event.sessions]
-        newSessions[name] = value
-        setEvent({ ...event, sessions: newSessions })
-    }
-    const addSession = () => {
-        const newSessions = [...event.sessions]
-        newSessions.push("")
-        setEvent({
-            ...event,
-            sessions: newSessions
-        })
-    }
-    const removeSession = (index) => {
-        setEvent({
-            ...event,
-            sessions: event.sessions.filter((sesssion, sessionIndex) => index !== sessionIndex)
-        })
-    }
+
+
     const handleSelectImage = (e) => {
         const inputFile = e.target.files[0]
         setSelectImage({
@@ -73,41 +56,43 @@ function NewEvent({ btnText }) {
             file: inputFile,
             link: URL.createObjectURL(inputFile),
         })
-        setEvent({
-            ...event,
+        setWorkshop({
+            ...workshop,
             image: inputFile
         })
     }
 
-    const submitEvnet = () => {
-        dispatch(createEvent({ eventData: event, setProgress: setProgress }))
+    const submitWorkshop = () => {
+        dispatch(createWorkshop({ workshopData: workshop, setProgress: setProgress }))
             .then(response => {
                 if (!response.payload.status) {
                     setOpenDialog(false)
-                    router.push(`/events/${response.payload._id}`)
+                    router.push(`/workshops/${response.payload._id}`)
                 }
             })
     }
 
+
+
     useEffect(() => {
         return () => {
-            setEvent({
+            setWorkshop({
+                image: "",
                 title: "",
                 description: "",
-                sessions: [""],
-                venue: "",
+                lecturer: "",
+                location: "",
                 date: new Date().toLocaleDateString("en-CA"),
-                time_from: "10:00",
+                time_from: "13:00",
                 time_to: "16:00",
-                ticket_price: "",
-                image: ""
+                discount: "",
+                price: "",
             })
             setSelectImage({
                 link: null,
                 file: null
             })
             setProgress(0)
-
         }
     }, [openDialog])
 
@@ -120,16 +105,16 @@ function NewEvent({ btnText }) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[750px] overflow-auto">
                 <DialogHeader>
-                    <DialogTitle>Create new event</DialogTitle>
+                    <DialogTitle>Create new workshop</DialogTitle>
                     <DialogDescription>
-                        Make a new event for your users, Let it fire.
+                        Make a new workshop for your users, Let's learn.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 py-4">
                     {
                         selectImage.file
                             ?
-                            <div className="event-image col-span-2 ">
+                            <div className="workshop-image col-span-2 ">
                                 <div className="selected-image w-full h-full flex items-start justify-between gap-3">
                                     <img className="w-20 h-20 object-cover rounded-xl" src={selectImage.link} alt="uploaded image" />
                                     <div className="flex items-start flex-col flex-1 h-full">
@@ -167,63 +152,49 @@ function NewEvent({ btnText }) {
                     }
                     <div className="flex flex-col gap-4">
                         <label>
-                            <span className="block mb-1">Event title</span>
-                            <Input name="title" placeholder="e.g. Z Dental Forum" value={event.title} onChange={handleChange} />
+                            <span className="block mb-1">Workshop title</span>
+                            <Input name="title" placeholder="e.g. Dental photography" value={workshop.title} onChange={handleChange} />
                         </label>
                         <label>
-                            <span className="block mb-1">Event description</span>
-                            <Textarea name="description" placeholder="Event description" rows={5} value={event.description} onChange={handleChange} />
+                            <span className="block mb-1">Workshop description</span>
+                            <Textarea name="description" placeholder="Workshop description" rows={5} value={workshop.description} onChange={handleChange} />
                         </label>
                         <div>
-                            <span className="block mb-1">Event sessions</span>
-                            <div className="flex flex-col gap-2 max-h-[225px] overflow-auto p-1">
-                                {
-                                    event.sessions.map((session, index) => (
-                                        <div className="flex gap-2" key={index}>
-                                            <Input name={index} placeholder="e.g. dental photography" value={session} onChange={handleSessions} />
-                                            {
-                                                index > 0 &&
-                                                <Button variant="destructive" onClick={() => removeSession(index)}>
-                                                    <Trash2 size={18}></Trash2>
-                                                </Button>
-                                            }
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                            <Button className="mt-4" onClick={addSession}>
-                                <Plus size={18} className="me-2"></Plus>
-                                Add session
-                            </Button>
+                            <span className="block mb-1">Workshop lecturer</span>
+                            <Input name="lecturer" placeholder="Lecturer name" value={workshop.lecturer} onChange={handleChange} />
                         </div>
-                    </div>
-                    <div className="flex flex-col gap-4 relative">
                         <label>
-                            <span className="block mb-1">Event venue</span>
-                            <Input name="venue" placeholder="e.g. Zagazig university"value={event.venue} onChange={handleChange} />
+                            <span className="block mb-1">Workshop location</span>
+                            <Input name="location" placeholder="e.g. Nexus workspace" value={workshop.location} onChange={handleChange} />
                         </label>
+                    </div>
+                    <div className="flex flex-col gap-4">
                         <label>
-                            <span className="block mb-1">Event date</span>
-                            <input type="date" name="date" className="p-1 px-3 rounded-md border w-full" defaultValue={event.date} value={event.date} onChange={handleChange} />
+                            <span className="block mb-1">Workshop date</span>
+                            <input type="date" name="date" className="p-1 px-3 rounded-md border w-full" defaultValue={workshop.date} value={workshop.date} onChange={handleChange} />
                         </label>
                         <div className="flex items-start gap-2">
                             <label className="w-full">
                                 <span className="block mb-1">Time from</span>
-                                <input type="time" name="time_from" className="rounded-lg w-full border p-1 px-3" value={event.time_from} onChange={handleChange} />
+                                <input type="time" name="time_from" className="rounded-lg w-full border p-1 px-3" value={workshop.time_from} onChange={handleChange} />
                             </label>
                             <label className="w-full">
                                 <span className="block mb-1">Time to</span>
-                                <input type="time" name="time_to" className="rounded-lg w-full border p-1 px-3" value={event.time_to} onChange={handleChange} />
+                                <input type="time" name="time_to" className="rounded-lg w-full border p-1 px-3" value={workshop.time_to} onChange={handleChange} />
                             </label>
                         </div>
                         <label>
-                            <span className="block mb-1">Ticket price</span>
-                            <Input type="number" name="ticket_price" placeholder="e.g. 100" value={event.ticket_price} onChange={handleChange} />
+                            <span className="block mb-1">Discount (%)</span>
+                            <Input type="number" name="discount" placeholder="e.g. 5" value={workshop.discount} onChange={handleChange} />
+                        </label>
+                        <label>
+                            <span className="block mb-1">Price</span>
+                            <Input type="number" name="price" placeholder="e.g. 800" value={workshop.price} onChange={handleChange} />
                         </label>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" onClick={submitEvnet} disabled={loading}>
+                    <Button type="submit" onClick={submitWorkshop} disabled={loading}>
                         {
                             loading ?
                                 <>
@@ -231,7 +202,7 @@ function NewEvent({ btnText }) {
                                     Creating...
                                 </>
                                 :
-                                "Create event"
+                                "Create workshop"
                         }
                     </Button>
                     <DialogClose>
@@ -245,4 +216,4 @@ function NewEvent({ btnText }) {
     )
 }
 
-export default NewEvent
+export default NewWorkshop

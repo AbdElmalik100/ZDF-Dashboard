@@ -1,58 +1,34 @@
-import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
-    DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
+import { EllipsisVertical } from 'lucide-react'
 import moment from 'moment'
-import {
-    AlertDialog,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import DeleteEvent from './DeleteEvent'
-import { Dialog, DialogTrigger } from './ui/dialog'
 import EditEvent from './EditEvent'
 import { formatCurrency } from '@/utils/formatter'
 import { Badge } from './ui/badge'
 import Link from 'next/link'
+import DeleteService from "./DeleteService"
 
 function EventCard({ event }) {
-    const [openUpdate, setOpenUpdate] = useState(false)
     return (
         <div className="event-card relative border shadow-md p-4 rounded-2xl flex items-stretch gap-3 transition-all ease-in-out hover:shadow-lg cursor-pointer">
-            <Dialog open={openUpdate} onOpenChange={setOpenUpdate}>
-                <AlertDialog>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="absolute p-1 px-2 w-fit top-2 right-2">
-                                <EllipsisVertical size={18}></EllipsisVertical>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56">
-                            <DropdownMenuGroup>
-                                <DialogTrigger asChild>
-                                    <DropdownMenuItem>
-                                        <Pencil size={18} className='me-2' />
-                                        Edit
-                                    </DropdownMenuItem>
-                                </DialogTrigger>
-                                <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem className="text-rose-600 focus:bg-rose-100 focus:text-rose-600">
-                                        <Trash2 size={18} className='me-2' />
-                                        Delete
-                                    </DropdownMenuItem>
-                                </AlertDialogTrigger>
-                            </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <DeleteEvent event={event}></DeleteEvent>
-                </AlertDialog>
-                <EditEvent openUpdate={openUpdate} setOpenUpdate={setOpenUpdate} eventData={event}></EditEvent>
-            </Dialog>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="absolute p-1 px-2 w-fit top-2 right-2">
+                        <EllipsisVertical size={18}></EllipsisVertical>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                    <DropdownMenuGroup>
+                        <EditEvent eventData={event}></EditEvent>
+                        <DeleteService service={event} type={"event"}></DeleteService>
+                    </DropdownMenuGroup>
+                </DropdownMenuContent>
+            </DropdownMenu>
             <Link href={`/events/${event._id}`} className="image h-full w-full relative">
                 <img src={event.image} className='rounded-lg object-cover h-full' alt="Event Image" />
                 <Badge className={`absolute top-2 left-2 shadow-md flex rounded-full items-center gap-1 ${event.is_available ? "bg-green-50 text-green-500 hover:bg-green-50" : "bg-rose-50 hover:bg-rose-50 text-rose-500"}`}>
@@ -61,7 +37,7 @@ function EventCard({ event }) {
                 </Badge>
             </Link>
             <div className="info overflow-hidden flex flex-col h-full w-full">
-                <Link href={`/events/${event._id}`} className='font-bold hover:underline'>{event.title}</Link>
+                <Link href={`/events/${event._id}`} className='font-bold hover:underline capitalize'>{event.title}</Link>
                 <p className='text-sm text-neutral-400 truncate'>
                     {event.description}
                 </p>

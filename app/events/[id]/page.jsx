@@ -8,7 +8,6 @@ import { formatCurrency } from "@/utils/formatter"
 import moment from "moment"
 import { BadgePoundSterling, Calendar, Clock2, MapPin } from "lucide-react"
 import SubscriptionTable from "@/components/SubscriptionTable"
-import QRCode from "@/components/QRCode"
 import { getSubscriptions } from "@/store/slices/subscriptionsSlice"
 
 
@@ -16,6 +15,7 @@ function EventDetails() {
     const params = useParams()
     const dispatch = useDispatch()
     const { event, eventToggle } = useSelector(state => state.events)
+
     const toggleEvent = () => {
         dispatch(updateEvent({ eventData: { ...event, is_available: !eventToggle } }))
     }
@@ -26,7 +26,7 @@ function EventDetails() {
     }, [params, dispatch])
 
     useEffect(() => {
-        if (event) dispatch(getSubscriptions(event._id))
+        if (event) dispatch(getSubscriptions({eventId: event._id}))
     }, [event])
     return (
         event &&
@@ -52,45 +52,42 @@ function EventDetails() {
                 />
             </div>
             <div className="flex items-start mt-10 gap-10">
-                <div className="event-image w-3/4">
+                <div className="event-image w-3/6">
                     <img src={event.image} className="w-full shadow-lg rounded-2xl h-full object-cover" alt="Event Image" />
                 </div>
                 <div className="info w-1/2 capitalize flex flex-col gap-8">
                     <div className="flex flex-col gap-2">
                         <h3 className="font-bold text-2xl">{event.title}</h3>
-                        <p className="text-xl">{event.description}</p>
+                        <p>{event.description}</p>
                     </div>
-                    <ul className="sub-info flex flex-col gap-2 ">
-                        <li className="flex items-center gap-2">
-                            <MapPin size={22}></MapPin>
-                            <span>{event.venue}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <Calendar size={22}></Calendar>
-                            <span>{new Date(event.date).toLocaleDateString()}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <Clock2 size={22}></Clock2>
-                            <span>{moment(event.time_from, "HH:mm:ss").format("hh:mm A")} - {moment(event.time_to, "HH:mm:ss").format("hh:mm A")}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <BadgePoundSterling size={22}></BadgePoundSterling>
-                            <span>{formatCurrency.format(event.ticket_price)}</span>
-                        </li>
-                    </ul>
+                    <div className="flex items-start gap-3 justify-between">
+                        <ul className="sub-info flex flex-col gap-3">
+                            <li className="flex items-center gap-2 capitalize">
+                                <MapPin size={22}></MapPin>
+                                <span>{event.venue}</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <Calendar size={22}></Calendar>
+                                <span>{new Date(event.date).toLocaleDateString()}</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <Clock2 size={22}></Clock2>
+                                <span>{moment(event.time_from, "HH:mm:ss").format("hh:mm A")} - {moment(event.time_to, "HH:mm:ss").format("hh:mm A")}</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <BadgePoundSterling size={22}></BadgePoundSterling>
+                                <span>{formatCurrency.format(event.ticket_price)}</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div className="subscription-table mt-12">
-                <div className="table-header flex items-end justify-between gap-5">
-                    <div className="left-side">
-                        <h2 className="font-bold text-2xl">Event subscriptions</h2>
-                        <p className="text-neutral-400">
-                            These are all the users that subscribed to your event, You can check their information.
-                        </p>
-                    </div>
-                    <div className="right-side">
-                        <QRCode QRCodeLink={event.qr_code} imageName={"Event QR Code"} desc={"QR code for approve your attendance, Scan it now."}></QRCode>
-                    </div>
+            <div className="subscription-table mt-20">
+                <div className="table-header flex flex-col gap-1">
+                    <h2 className="font-bold text-2xl">Event subscriptions</h2>
+                    <p className="text-neutral-400">
+                        These are all the users that subscribed to your event, You can check their information.
+                    </p>
                 </div>
                 <div className="table mt-4 w-full">
                     <SubscriptionTable></SubscriptionTable>

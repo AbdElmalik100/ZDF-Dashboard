@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, Theater, Tickets, Sheet } from "lucide-react";
+import { LayoutDashboard, Theater, Tickets, BriefcaseBusiness, Boxes, Sheet } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,15 +24,27 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link href='/attendance' className={`flex p-2 px-3 rounded-lg items-center gap-2 w-full transition-all ease-in-out ${pathname.includes('attendance') ? 'bg-primary text-white' : 'hover:bg-neutral-100'}`}>
-                        <Sheet></Sheet>
-                        Attendance
+                    <Link href='/workshops' className={`flex p-2 px-3 rounded-lg items-center gap-2 w-full transition-all ease-in-out ${pathname.includes('workshops') ? 'bg-primary text-white' : 'hover:bg-neutral-100'}`}>
+                        <BriefcaseBusiness></BriefcaseBusiness>
+                        Workshops
+                    </Link>
+                </li>
+                <li>
+                    <Link href='/bundles' className={`flex p-2 px-3 rounded-lg items-center gap-2 w-full transition-all ease-in-out ${pathname.includes('bundles') ? 'bg-primary text-white' : 'hover:bg-neutral-100'}`}>
+                        <Boxes></Boxes>
+                        Bundles
                     </Link>
                 </li>
                 <li>
                     <Link href='/theatre' className={`flex p-2 px-3 rounded-lg items-center gap-2 w-full transition-all ease-in-out ${pathname.includes('theatre') ? 'bg-primary text-white' : 'hover:bg-neutral-100'}`}>
                         <Theater></Theater>
                         Theatre
+                    </Link>
+                </li>
+                <li>
+                    <Link href='/attendances' className={`flex p-2 px-3 rounded-lg items-center gap-2 w-full transition-all ease-in-out ${pathname.includes('attendances') ? 'bg-primary text-white' : 'hover:bg-neutral-100'}`}>
+                        <Sheet></Sheet>
+                        Attendances
                     </Link>
                 </li>
             </ul>

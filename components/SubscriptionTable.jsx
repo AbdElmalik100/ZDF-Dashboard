@@ -16,15 +16,15 @@ function SubscriptionTable() {
     const [searchInput, setSearchInput] = useState("")
     const dispatch = useDispatch()
 
-    const handleAttendace = (subscriptionObj) => {
-        const updatedData = subscriptionsData.map(obj =>
-            obj._id === subscriptionObj._id ? { ...obj, attendance: !obj.attendance } : obj
-        );
-        const sortedData = [...updatedData].sort((a, b) => b.attendance - a.attendance);
-        setSubscriptionsData(sortedData);
-        setFilteredData(sortedData);
-        dispatch(updateSubscription(subscriptionObj))
-    }
+    // const handleAttendace = (subscriptionObj) => {
+    //     const updatedData = subscriptionsData.map(obj =>
+    //         obj._id === subscriptionObj._id ? { ...obj, attendance: !obj.attendance } : obj
+    //     );
+    //     const sortedData = [...updatedData].sort((a, b) => b.attendance - a.attendance);
+    //     setSubscriptionsData(sortedData);
+    //     setFilteredData(sortedData);
+    //     dispatch(updateSubscription(subscriptionObj))
+    // }
 
     const searchInObject = (obj, searchTerm) => {
         searchTerm = searchTerm.toLowerCase();
@@ -54,23 +54,26 @@ function SubscriptionTable() {
     }
 
 
+    // useEffect(() => {
+    //     socket.on("recieve_event_attendance", userSubscriptionData => {
+    //         console.log(userSubscriptionData);
+    //         dispatch(liveUpdateSubscriptions(userSubscriptionData.updatedSubscription))
+    //     })
+
+    //     socket.on("recieve_workshop_attendance", userSubscriptionData => {
+    //         dispatch(liveUpdateSubscriptions(userSubscriptionData.updatedSubscription))
+    //     })
+
+    //     return () => {
+    //         socket.off("recieve_event_attendance")
+    //         socket.off("recieve_workshop_attendance")
+    //     }
+    // }, [socket, subscriptions])
+
+
     useEffect(() => {
-        socket.on("recieve_event_attendance", userSubscriptionData => {
-            console.log(userSubscriptionData);
-            dispatch(liveUpdateSubscriptions(userSubscriptionData.updatedSubscription))
-        })
-
-        return () => {
-            socket.off("recieve_event_attendance")
-        }
-    }, [socket, subscriptions])
-
-
-    useEffect(() => {
-        if (subscriptions.length > 0) {
-            setSubscriptionsData(subscriptions);
-            setFilteredData(subscriptions);
-        }
+        setSubscriptionsData([...subscriptions]);
+        setFilteredData([...subscriptions]);
     }, [subscriptions])
 
     return (
@@ -103,7 +106,7 @@ function SubscriptionTable() {
                     Amount
                 </span>
                 <span className='font-medium text-neutral-400 capitalize w-full text-end'>
-                    Attendance
+                    Created At
                 </span>
             </div>
             <Reorder.Group
@@ -119,9 +122,8 @@ function SubscriptionTable() {
                             <Reorder.Item
                                 key={obj._id}
                                 value={obj}
-                                onClick={() => handleAttendace(obj)}
                             >
-                                <div className={`data-row flex items-center mt-4 cursor-pointer transition-all ease-in-out hover:opacity-50 justify-between rounded-lg p-1.5 px-5 border ${obj.attendance ? "border-green-400" : "border-rose-400"}`}>
+                                <div className={`data-row flex items-center mt-3 cursor-pointer transition-all ease-in-out hover:opacity-50 justify-between p-1.5 px-5 border-b pb-3`}>
                                     <span className='id w-full'>#{obj.code}</span>
                                     <span className='name flex items-center gap-2 w-full'>
                                         <Avatar className="w-10 h-10">
@@ -133,9 +135,7 @@ function SubscriptionTable() {
                                     <span className='email w-full'>{obj.user?.email}</span>
                                     <span className='phone-number w-full ms-10'>{obj.user?.phone_number || "N/A"}</span>
                                     <span className='amount font-medium w-full text-end'>{formatCurrency.format(obj.amount)}</span>
-                                    <span className='attendace w-full text-end'>
-                                        <Checkbox checked={obj.attendance} onCheckedChange={() => handleAttendace(obj)} />
-                                    </span>
+                                    <span className='attendace w-full text-end text-md'>{new Date(obj.created_at).toLocaleString()}</span>
                                 </div>
                             </Reorder.Item>
                         )

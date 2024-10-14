@@ -11,61 +11,52 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Plus, Trash2, RefreshCw, ImageUp, Trash } from 'lucide-react'
+import { Plus, RefreshCw, ImageUp, Trash, X } from 'lucide-react'
 import { Textarea } from "@/components/ui/textarea"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { createEvent } from "@/store/slices/eventsSlice"
 import { Progress } from "@/components/ui/progress"
 import { useRouter } from "next/navigation"
 import { formatByte } from "@/lib/formatter"
+import { createBundle } from "@/store/slices/bundlesSlice"
+import { getWorkshops } from "@/store/slices/workshopsSlice"
 
-function NewEvent({ btnText }) {
+function NewBundle({ btnText }) {
     const dispatch = useDispatch()
-    const { loading } = useSelector(state => state.events)
+    const { loading } = useSelector(state => state.workshops)
     const [openDialog, setOpenDialog] = useState(false)
     const router = useRouter()
+    const { workshops } = useSelector(state => state.workshops)
     const [selectImage, setSelectImage] = useState({
         link: "",
         file: ""
     })
-    const [event, setEvent] = useState({
+    const [bundle, setBundle] = useState({
+        image: "",
         title: "",
         description: "",
-        sessions: [""],
-        venue: "",
-        date: new Date().toLocaleDateString("en-CA"),
-        time_from: "10:00",
-        time_to: "16:00",
-        ticket_price: "",
-        image: ""
+        workshops: [],
+        price: "",
     })
     const [progress, setProgress] = useState(0)
+    const [openSelect, setOpenSelect] = useState(false)
+
+
+    const handleSelection = (workshop) => {
+        const bundleWorkshops = [...bundle.workshops]
+        bundleWorkshops.push(workshop)
+        setBundle({...bundle, workshops: bundleWorkshops})
+    }
+    const deleteWorkshop = (workshopId) => {
+        const bundleWorkshops = bundle.workshops.filter(workshop => workshop._id !== workshopId)        
+        setBundle({...bundle, workshops: bundleWorkshops})
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setEvent({ ...event, [name]: value })
+        setBundle({ ...bundle, [name]: value })
     }
-    const handleSessions = (e) => {
-        const { name, value } = e.target
-        const newSessions = [...event.sessions]
-        newSessions[name] = value
-        setEvent({ ...event, sessions: newSessions })
-    }
-    const addSession = () => {
-        const newSessions = [...event.sessions]
-        newSessions.push("")
-        setEvent({
-            ...event,
-            sessions: newSessions
-        })
-    }
-    const removeSession = (index) => {
-        setEvent({
-            ...event,
-            sessions: event.sessions.filter((sesssion, sessionIndex) => index !== sessionIndex)
-        })
-    }
+
     const handleSelectImage = (e) => {
         const inputFile = e.target.files[0]
         setSelectImage({
@@ -73,41 +64,42 @@ function NewEvent({ btnText }) {
             file: inputFile,
             link: URL.createObjectURL(inputFile),
         })
-        setEvent({
-            ...event,
+        setBundle({
+            ...bundle,
             image: inputFile
         })
     }
 
-    const submitEvnet = () => {
-        dispatch(createEvent({ eventData: event, setProgress: setProgress }))
+    const submitBundle = () => {
+        const bundleFormation = { ...bundle, workshops: bundle.workshops.map(el => el._id) }
+        
+        dispatch(createBundle({ bundleData: bundleFormation, setProgress: setProgress }))
             .then(response => {
                 if (!response.payload.status) {
                     setOpenDialog(false)
-                    router.push(`/events/${response.payload._id}`)
+                    // router.push(`/bundles/${response.payload._id}`)
                 }
             })
     }
 
     useEffect(() => {
+        dispatch(getWorkshops())
+    }, [dispatch])
+
+    useEffect(() => {
         return () => {
-            setEvent({
+            setBundle({
+                image: "",
                 title: "",
                 description: "",
-                sessions: [""],
-                venue: "",
-                date: new Date().toLocaleDateString("en-CA"),
-                time_from: "10:00",
-                time_to: "16:00",
-                ticket_price: "",
-                image: ""
+                workshops: [],
+                price: "",
             })
             setSelectImage({
                 link: null,
                 file: null
             })
             setProgress(0)
-
         }
     }, [openDialog])
 
@@ -120,16 +112,16 @@ function NewEvent({ btnText }) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[750px] overflow-auto">
                 <DialogHeader>
-                    <DialogTitle>Create new event</DialogTitle>
+                    <DialogTitle>Create new bundle</DialogTitle>
                     <DialogDescription>
-                        Make a new event for your users, Let it fire.
+                        Make a new bundle of workshops with great offers for your users, Make it easy for them.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-2 gap-4 py-4">
+                <div className="grid grid-cols-1 gap-4 py-4">
                     {
                         selectImage.file
                             ?
-                            <div className="event-image col-span-2 ">
+                            <div className="workshop-image col-span-2 ">
                                 <div className="selected-image w-full h-full flex items-start justify-between gap-3">
                                     <img className="w-20 h-20 object-cover rounded-xl" src={selectImage.link} alt="uploaded image" />
                                     <div className="flex items-start flex-col flex-1 h-full">
@@ -167,63 +159,61 @@ function NewEvent({ btnText }) {
                     }
                     <div className="flex flex-col gap-4">
                         <label>
-                            <span className="block mb-1">Event title</span>
-                            <Input name="title" placeholder="e.g. Z Dental Forum" value={event.title} onChange={handleChange} />
+                            <span className="block mb-1">Bundle title</span>
+                            <Input name="title" placeholder="e.g. ZDF package" value={bundle.title} onChange={handleChange} />
                         </label>
                         <label>
-                            <span className="block mb-1">Event description</span>
-                            <Textarea name="description" placeholder="Event description" rows={5} value={event.description} onChange={handleChange} />
-                        </label>
-                        <div>
-                            <span className="block mb-1">Event sessions</span>
-                            <div className="flex flex-col gap-2 max-h-[225px] overflow-auto p-1">
+                            <span className="block mb-1">Bundle workshops</span>
+                            {/* <select name="" multiple className="w-full border rounded-2xl p-3">
                                 {
-                                    event.sessions.map((session, index) => (
-                                        <div className="flex gap-2" key={index}>
-                                            <Input name={index} placeholder="e.g. dental photography" value={session} onChange={handleSessions} />
-                                            {
-                                                index > 0 &&
-                                                <Button variant="destructive" onClick={() => removeSession(index)}>
-                                                    <Trash2 size={18}></Trash2>
-                                                </Button>
-                                            }
-                                        </div>
+                                    workshops.length > 0 &&
+                                    workshops.map(workshop => (
+                                        <option value={workshop._id}>{ workshop.title }</option>
                                     ))
                                 }
+                            </select> */}
+                            <div className="select-multiple rounded-lg border flex items-center gap-2 relative hover:border-black p-2 px-3" onClick={() => setOpenSelect(prev => !prev)}>
+                                {
+                                    bundle.workshops.length > 0 
+                                        ?
+                                        <div className="flex flex-wrap text-xs gap-1">
+                                            {
+                                                bundle.workshops.map((workshop, index) => (
+                                                    <span key={index} className="p-1 px-2 rounded-full border capitalize flex items-center gap-1">
+                                                        {workshop.title}
+                                                        <X size={12} className="cursor-pointer" onClick={() => deleteWorkshop(workshop._id)}></X>
+                                                    </span>
+                                                ))
+                                            }
+                                        </div>
+                                        :
+                                        <span className="text-sm text-neutral-500">Select workshops</span>
+                                }
+                                {
+                                    openSelect &&
+                                    <div className="menu bg-white shadow-md rounded-lg p-1 absolute flex flex-col gap-1 border left-0 top-11 w-full h-[150px] overflow-auto">
+                                        {
+                                            
+                                            workshops.map((workshop, index) => (
+                                                <span key={index} onClick={() => handleSelection(workshop)} className="p-1.5 px-2 cursor-pointer rounded text-sm hover:bg-neutral-100 capitalize">{workshop.title}</span>
+                                            ))
+                                        }
+                                    </div>
+                                }
                             </div>
-                            <Button className="mt-4" onClick={addSession}>
-                                <Plus size={18} className="me-2"></Plus>
-                                Add session
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="flex flex-col gap-4 relative">
-                        <label>
-                            <span className="block mb-1">Event venue</span>
-                            <Input name="venue" placeholder="e.g. Zagazig university"value={event.venue} onChange={handleChange} />
                         </label>
                         <label>
-                            <span className="block mb-1">Event date</span>
-                            <input type="date" name="date" className="p-1 px-3 rounded-md border w-full" defaultValue={event.date} value={event.date} onChange={handleChange} />
+                            <span className="block mb-1">Bundle description</span>
+                            <Textarea name="description" placeholder="Bundle description" rows={3} value={bundle.description} onChange={handleChange} />
                         </label>
-                        <div className="flex items-start gap-2">
-                            <label className="w-full">
-                                <span className="block mb-1">Time from</span>
-                                <input type="time" name="time_from" className="rounded-lg w-full border p-1 px-3" value={event.time_from} onChange={handleChange} />
-                            </label>
-                            <label className="w-full">
-                                <span className="block mb-1">Time to</span>
-                                <input type="time" name="time_to" className="rounded-lg w-full border p-1 px-3" value={event.time_to} onChange={handleChange} />
-                            </label>
-                        </div>
                         <label>
-                            <span className="block mb-1">Ticket price</span>
-                            <Input type="number" name="ticket_price" placeholder="e.g. 100" value={event.ticket_price} onChange={handleChange} />
+                            <span className="block mb-1">Price</span>
+                            <Input type="number" name="price" placeholder="e.g. 800" value={bundle.price} onChange={handleChange} />
                         </label>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" onClick={submitEvnet} disabled={loading}>
+                    <Button type="submit" onClick={submitBundle} disabled={loading}>
                         {
                             loading ?
                                 <>
@@ -231,7 +221,7 @@ function NewEvent({ btnText }) {
                                     Creating...
                                 </>
                                 :
-                                "Create event"
+                                "Create bundle"
                         }
                     </Button>
                     <DialogClose>
@@ -245,4 +235,4 @@ function NewEvent({ btnText }) {
     )
 }
 
-export default NewEvent
+export default NewBundle

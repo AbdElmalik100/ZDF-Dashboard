@@ -26,18 +26,11 @@ function TheatreDetails() {
     const params = useParams()
     const dispatch = useDispatch()
     const { theatre, loading } = useSelector(state => state.theatres)
-    const [openQr, setOpenQr] = useState(false)
-    const QRref = useClickAway(() => {
-        setOpenQr(false)
-    })
 
     useEffect(() => {
         socket.on("recieve_seat", seatData => {
-            console.log(seatData);
             dispatch(liveUpdateSeats(seatData))
-            console.log(theatre);
         })
-
         return () => {
             socket.off("recieve_seat")
         }
