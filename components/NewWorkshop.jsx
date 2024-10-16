@@ -107,7 +107,7 @@ function NewWorkshop({ btnText }) {
                 <DialogHeader>
                     <DialogTitle>Create new workshop</DialogTitle>
                     <DialogDescription>
-                        Make a new workshop for your users, Let's learn.
+                        Make a new workshop for your users, Let&apos;s learn.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 py-4">

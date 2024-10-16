@@ -59,7 +59,7 @@ function DeleteService({ service, type }) {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure you want to delete this {type}?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the {type} you selected and remove it's data from our servers.
+                        This action cannot be undone. This will permanently delete the {type} you selected and remove it&apos;s data from our servers.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
