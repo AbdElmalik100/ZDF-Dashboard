@@ -78,7 +78,7 @@ const workshopsSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(getWorkshops.pending, state => {
-                state.loading = false
+                state.loading = true
             })
             .addCase(getWorkshops.fulfilled, (state, action) => {
                 state.loading = false
@@ -90,7 +90,7 @@ const workshopsSlice = createSlice({
 
         builder
             .addCase(createWorkshop.pending, state => {
-                state.loading = false
+                state.loading = true
             })
             .addCase(createWorkshop.fulfilled, (state, action) => {
                 state.loading = false
@@ -103,7 +103,7 @@ const workshopsSlice = createSlice({
         
         builder
             .addCase(getWorkshop.pending, state => {
-                state.loading = false
+                state.loading = true
             })
             .addCase(getWorkshop.fulfilled, (state, action) => {
                 state.loading = false
@@ -116,7 +116,7 @@ const workshopsSlice = createSlice({
         
         builder
             .addCase(updateWorkshop.pending, state => {
-                state.loading = false
+                state.loading = true
             })
             .addCase(updateWorkshop.fulfilled, (state, action) => {
                 state.loading = false
@@ -129,7 +129,7 @@ const workshopsSlice = createSlice({
             })
         builder
             .addCase(deleteWorkshop.pending, state => {
-                state.loading = false
+                state.loading = true
             })
             .addCase(deleteWorkshop.fulfilled, (state, action) => {
                 state.loading = false
