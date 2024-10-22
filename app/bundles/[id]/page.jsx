@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch'
 import { getBundle, updateBundle } from '@/store/slices/bundlesSlice'
 import { getSubscriptions } from '@/store/slices/subscriptionsSlice'
 import { formatCurrency } from '@/utils/formatter'
+import { UsersRound } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -58,8 +59,13 @@ function BundleDetails() {
                         <img width={375} className='rounded-2xl' src={bundle.image} alt="Bundle image" />
                     </div>
                     <div>
-                        <h2 className='font-bold text-2xl mb-2'>{bundle.title}</h2>
-                        <span className='block font-bold'>{formatCurrency.format(bundle.price)}</span>
+                        <h2 className='font-bold text-2xl mb-1'>{bundle.title}</h2>
+                        <p className='text-sm text-neutral-400'>{bundle.description}</p>
+                        <div className="flex items-center gap-2 mt-4">
+                            <UsersRound size={20}></UsersRound>
+                            <span>{bundle.limit} Limited seats</span>
+                        </div>
+                        <span className='block font-bold text-3xl mt-5'>{formatCurrency.format(bundle.price)}</span>
                     </div>
                 </div>
             </div>

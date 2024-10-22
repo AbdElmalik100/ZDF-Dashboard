@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch'
 import { getSubscriptions } from '@/store/slices/subscriptionsSlice'
 import { getWorkshop, updateWorkshop } from '@/store/slices/workshopsSlice'
 import { formatCurrency } from '@/utils/formatter'
-import { BadgePoundSterling, Calendar, Clock2, MapPin } from 'lucide-react'
+import { BadgePoundSterling, Calendar, Clock2, MapPin, UsersRound } from 'lucide-react'
 import moment from 'moment'
 import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -81,6 +81,10 @@ function WorkshopDetails() {
                             <li className="flex items-center gap-2">
                                 <Clock2 size={22}></Clock2>
                                 <span>{moment(workshop.time_from, "HH:mm:ss").format("hh:mm A")} - {moment(workshop.time_to, "HH:mm:ss").format("hh:mm A")}</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <UsersRound size={22}></UsersRound>
+                                <span>{workshop.limit} Limited seats</span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <BadgePoundSterling size={22}></BadgePoundSterling>

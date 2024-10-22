@@ -39,6 +39,7 @@ function NewWorkshop({ btnText }) {
         time_from: "13:00",
         time_to: "14:00",
         discount: "",
+        limit: "",
         price: "",
     })
     const [progress, setProgress] = useState(0)
@@ -86,6 +87,7 @@ function NewWorkshop({ btnText }) {
                 time_from: "13:00",
                 time_to: "16:00",
                 discount: "",
+                limit: "",
                 price: "",
             })
             setSelectImage({
@@ -169,6 +171,10 @@ function NewWorkshop({ btnText }) {
                         </label>
                     </div>
                     <div className="flex flex-col gap-4">
+                        <label>
+                            <span className="block mb-1">Workshop limit</span>
+                            <Input type="number" name="limit" placeholder="e.g. 25" value={workshop.limit} onChange={handleChange} />
+                        </label>
                         <label>
                             <span className="block mb-1">Workshop date</span>
                             <input type="date" name="date" className="p-1 px-3 rounded-md border w-full" defaultValue={workshop.date} value={workshop.date} onChange={handleChange} />

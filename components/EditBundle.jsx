@@ -70,9 +70,7 @@ function EditBundle({ bundleData }) {
     }
 
     const submitUpdate = () => {
-        const bundleFormation = { ...bundle, workshops: bundle.workshops.map(el => el._id) }
-        console.log(bundleFormation);
-        
+        const bundleFormation = { ...bundle, workshops: bundle.workshops.map(el => el._id) }        
         dispatch(updateBundle({ bundleData: bundleFormation, setProgress: setProgress }))
             .then(response => {
                 if (!response.payload.status) setOpenDialog(false)
@@ -191,6 +189,10 @@ function EditBundle({ bundleData }) {
                         <label>
                             <span className="block mb-1">Bundle description</span>
                             <Textarea name="description" placeholder="Bundle description" rows={3} value={bundle.description} onChange={handleChange} />
+                        </label>
+                        <label>
+                            <span className="block mb-1">Bundle limit</span>
+                            <Input type="number" name="limit" placeholder="e.g. 25" value={bundle.limit} onChange={handleChange} />
                         </label>
                         <label>
                             <span className="block mb-1">Price</span>

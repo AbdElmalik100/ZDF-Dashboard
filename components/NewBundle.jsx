@@ -36,6 +36,7 @@ function NewBundle({ btnText }) {
         title: "",
         description: "",
         workshops: [],
+        limit: "",
         price: "",
     })
     const [progress, setProgress] = useState(0)
@@ -77,7 +78,7 @@ function NewBundle({ btnText }) {
             .then(response => {
                 if (!response.payload.status) {
                     setOpenDialog(false)
-                    // router.push(`/bundles/${response.payload._id}`)
+                    router.push(`/bundles/${response.payload._id}`)
                 }
             })
     }
@@ -93,6 +94,7 @@ function NewBundle({ btnText }) {
                 title: "",
                 description: "",
                 workshops: [],
+                limit: "",
                 price: "",
             })
             setSelectImage({
@@ -164,14 +166,6 @@ function NewBundle({ btnText }) {
                         </label>
                         <label>
                             <span className="block mb-1">Bundle workshops</span>
-                            {/* <select name="" multiple className="w-full border rounded-2xl p-3">
-                                {
-                                    workshops.length > 0 &&
-                                    workshops.map(workshop => (
-                                        <option value={workshop._id}>{ workshop.title }</option>
-                                    ))
-                                }
-                            </select> */}
                             <div className="select-multiple rounded-lg border flex items-center gap-2 relative hover:border-black p-2 px-3" onClick={() => setOpenSelect(prev => !prev)}>
                                 {
                                     bundle.workshops.length > 0 
@@ -205,6 +199,10 @@ function NewBundle({ btnText }) {
                         <label>
                             <span className="block mb-1">Bundle description</span>
                             <Textarea name="description" placeholder="Bundle description" rows={3} value={bundle.description} onChange={handleChange} />
+                        </label>
+                        <label>
+                            <span className="block mb-1">Bundle limit</span>
+                            <Input type="number" name="limit" placeholder="e.g. 25" value={bundle.limit} onChange={handleChange} />
                         </label>
                         <label>
                             <span className="block mb-1">Price</span>

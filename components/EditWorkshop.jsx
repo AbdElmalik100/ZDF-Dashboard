@@ -146,11 +146,15 @@ function EditWorkshop({ workshopData }) {
                             <span className="block mb-1">Workshop lecturer</span>
                             <Input name="lecturer" placeholder="Lecturer name" value={workshop.lecturer} onChange={handleChange} />
                         </div>
-                    </div>
-                    <div className="flex flex-col gap-4">
                         <label>
                             <span className="block mb-1">Workshop location</span>
                             <Input name="location" placeholder="e.g. Nexus workspace" value={workshop.location} onChange={handleChange} />
+                        </label>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <label>
+                            <span className="block mb-1">Workshop limit</span>
+                            <Input type="number" name="limit" placeholder="e.g. 25" value={workshop.limit} onChange={handleChange} />
                         </label>
                         <label>
                             <span className="block mb-1">Workshop date</span>
